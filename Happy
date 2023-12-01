@@ -1,0 +1,22 @@
+% Facts
+happy(X) :- history_exam_passed(X), wins_lottery(X).
+pass_all_exams(X) :- studies(X) ; lucky(X).
+studies(X) :- pass_all_exams(X).
+lucky(X) :- pass_all_exams(X).
+wins_lottery(X) :- lucky(X).
+
+% Given information
+history_exam_passed(john) :- \+ studies(john).
+lucky(john).
+
+% Goal
+goal :- happy(john).
+
+% Resolution Refutation
+resolve([]) :- !, fail.
+resolve([H | T]) :- clause(H, B), append(B, T, NewList), resolve(NewList).
+
+prove_goal :- goal, \+ resolve([ \+ goal ]).
+
+% Query
+?- prove_goal.
