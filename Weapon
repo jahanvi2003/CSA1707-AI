@@ -1,0 +1,25 @@
+% Facts
+american(robert).
+hostile(country_a).
+missiles(country_a).
+
+% Rules
+criminal(X) :- american(X), sells_weapons(X, Y), hostile(Y).
+
+sells_weapons(X, Y) :- american(X), missiles(Y).
+
+% Forward Chaining
+forward_chaining :-
+    findall(Fact, (rule(Fact), \+fact(Fact)), NewFacts),
+    assert_all_facts(NewFacts),
+    (member(criminal(robert), NewFacts) -> write('Robert is criminal.'); write('Robert is not criminal.')).
+
+rule(Fact) :- call(Fact).
+
+fact(Fact) :- Fact.
+
+assert_all_facts([]).
+assert_all_facts([H | T]) :- assertz(fact(H)), assert_all_facts(T).
+
+% Query
+?- forward_chaining.
