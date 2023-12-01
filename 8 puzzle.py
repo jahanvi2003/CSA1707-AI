@@ -1,30 +1,30 @@
-N = 8
-board = [[0]*N for _ in range(N)]
+from heapq import heappop, heappush
+goal_state = (1, 2, 3, 4, 5, 6, 7, 8, 0)
+moves = {0: [1, 3], 1: [0, 2, 4], 2: [1, 5], 3: [0, 4, 6], 4: [1, 3, 5, 7], 5: [2, 4, 8], 6: [3, 7], 7: [4, 6, 8], 8: [5, 7]}
 
-def attack(i, j):
-    for k in range(0,N):
-        if board[i][k]==1 or board[k][j]==1:
-            return True
-    for k in range(0,N):
-        for l in range(0,N):
-            if (k+l==i+j) or (k-l==i-j):
-                if board[k][l]==1:
-                    return True
-    return False
+def heuristic(state):
+    return sum(abs(i // 3 - state[i] // 3) + abs(i % 3 - state[i] % 3) for i in range(1, 9) if state[i] != 0)
 
-def N_queens(n):
-    if n==0:
-        return True
-    for i in range(0,N):
-        for j in range(0,N):
-            if (not(attack(i,j))) and (board[i][j]!=1):
-                board[i][j] = 1
-                if N_queens(n-1)==True:
-                    return True
-                board[i][j] = 0
+def solve_puzzle(initial_state):
+    heap, visited = [(heuristic(initial_state), 0, initial_state, [])], set()
+    while heap:
+        _, cost, current_state, path = heappop(heap)
+        if current_state == goal_state: return path
+        if current_state in visited: continue
+        visited.add(current_state)
+        z = current_state.index(0)
+        for move in moves[z]:
+            new_state = list(current_state)
+            new_state[z], new_state[move] = new_state[move], new_state[z]
+            if tuple(new_state) not in visited:
+                new_cost = cost + 1
+                heappush(heap, (new_cost + heuristic(new_state), new_cost, tuple(new_state), path + [move]))
+    return None
 
-    return False
-
-N_queens(N)
-for i in board:
-    print (i)
+initial = (1, 2, 3, 4, 0, 5, 6, 7, 8)
+solution = solve_puzzle(initial)
+if solution:
+    print("Solution steps:", solution)
+    print("Number of steps:", len(solution))
+else:
+    print("No solution exists for the given initial state.")
