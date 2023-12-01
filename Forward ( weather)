@@ -1,0 +1,22 @@
+% Facts
+rainy(chennai).
+rainy(coimbatore).
+rainy(ooty).
+cold(ooty).
+
+% Rules
+weather_condition(X, rainy) :-
+    rainy(X).
+weather_condition(X, cold) :-
+    cold(X).
+
+% Forward Chaining Rule
+has_weather_condition(Location, Condition) :-
+    weather_condition(Location, Condition).
+
+% Example Usage
+% Query: has_weather_condition(ooty, Condition).
+% Response: Condition = rainy ; Condition = cold.
+%
+% Query: has_weather_condition(chennai, Condition).
+% Response: Condition = rainy.
